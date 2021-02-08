@@ -31,7 +31,7 @@ Shader "Sample/ToonOutline"
         // Forward base pass
         Pass
         {
-            Name "ForwardBase"
+            Name "Forward"
             Tags { "LightMode" = "UniversalForward" }
 
             Blend Off
