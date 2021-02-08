@@ -78,6 +78,7 @@ Shader "Sample/ToonOutline"
         Pass
         {
             Name "Outline"
+            Tags { "LightMode" = "SRPDefaultUnlit" }
 
             Blend Off
             Cull Front // For outline
