@@ -25,10 +25,10 @@ Shader "Sample/ToonOutline"
     }
     SubShader
     {
-        Tags { "Queue" = "Geometry" "RenderType" = "Opaque" "RenderPipeline" = "UniversalRenderPipeline" }
+        Tags { "Queue" = "Geometry" "RenderType" = "Opaque" "RenderPipeline" = "UniversalPipeline" }
         LOD 200
 
-        // Forward base pass
+        // Forward pass
         Pass
         {
             Name "Forward"
