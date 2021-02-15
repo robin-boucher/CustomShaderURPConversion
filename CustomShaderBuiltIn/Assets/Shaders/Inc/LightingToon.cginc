@@ -3,6 +3,12 @@
 
 // Basic toon lighting implementation
 
+#ifdef UNITY_COLORSPACE_GAMMA
+#define SPECULAR_VALUE 0.22
+#else
+#define SPECULAR_VALUE 0.04
+#endif
+
 // Diffuse
 fixed3 GetLightingToonDiffuse(UnityLight light, float distanceAttenuation, float shadowAttenuation, half3 normalWS, sampler2D toonRampTex, float shadowRampBlend)
 {
@@ -15,45 +21,46 @@ fixed3 GetLightingToonDiffuse(UnityLight light, float distanceAttenuation, float
     // Apply shadow attenuation (smoothstep)
     toonRamp *= smoothstep(0.5 - shadowRampBlend, 0.5 + shadowRampBlend, shadowAttenuation);
 
-    return light.color * distanceAttenuation * toonRamp;
+    return distanceAttenuation * toonRamp;
 }
 
-// Specular factor
-float GetSpecularFactor(half3 normalWS, half3 lightDirectionWS, half3 viewDirectionWS, float smoothness)
+// Specular term
+float GetSpecularTerm(half3 normalWS, half3 lightDirectionWS, half3 viewDirectionWS, float smoothness)
 {
-    // Based on UnityStandardBRDF.cginc, without metallic consideration
+    // Based on UnityStandardBRDF.cginc
 
-    float roughness = (1 - smoothness) * (1 - smoothness);
+    float perceptualRoughness = (1 - smoothness);
+    float roughness = perceptualRoughness * perceptualRoughness;
 
     float3 halfVector = normalize(lightDirectionWS + viewDirectionWS);
     float NDH = saturate(dot(normalWS, halfVector));
     float LDH = saturate(dot(lightDirectionWS, halfVector));
 
     float r2 = roughness * roughness;
-    float d = NDH * NDH * (r2 - 1.0) + 1.00001;
+    float d = NDH * NDH * (r2 - 1) + 1.00001;
 
 #ifdef UNITY_COLORSPACE_GAMMA
-    float specularFactor = roughness / (max(0.32, LDH) * (1.5 + roughness) * d);
-    half surfaceReduction = 0.28;
+    float normalizationTerm = roughness + 1.5;
+    float specularTerm = roughness / (d * max(0.32, LDH) * normalizationTerm);
 #else
-    float specularFactor = r2 / (max(0.1f, LDH * LDH) * (roughness + 0.5f) * (d * d) * 4);
-    half surfaceReduction = 0.064;
+    float normalizationTerm = roughness * 4 + 2;
+    float specularTerm = r2 / ((d * d) * max(0.1, LDH * LDH) * normalizationTerm);
 #endif
-    
-    return specularFactor * surfaceReduction;
+
+    return specularTerm;
 }
 
 // Specular
 fixed3 GetLightingToonSpecular(UnityLight light, float shadowAttenuation, half3 normalWS, half3 viewDirectionWS, fixed3 specularColor, float smoothness, sampler2D toonRampTex)
 {
     // Specular factor
-    float specularFactor = GetSpecularFactor(normalWS, light.dir, viewDirectionWS, smoothness);
+    float specularFactor = GetSpecularTerm(normalWS, light.dir, viewDirectionWS, smoothness) * SPECULAR_VALUE;
 
     // Sample toon ramp (assumes toon ramp tex is horizontal, dark -> light)
     float2 toonRampUV = float2(saturate(specularFactor), 0.5);
     fixed3 toonRamp = tex2D(toonRampTex, toonRampUV).rgb;
 
-    return light.color * specularColor * toonRamp;
+    return specularColor * toonRamp;
 }
 
 // Get lighting toon color
@@ -64,7 +71,8 @@ fixed3 GetLightingToonColor(fixed3 color, UnityLight light, float distanceAttenu
     // Specular
     fixed3 specular = GetLightingToonSpecular(light, shadowAttenuation, normalWS, viewDirectionWS, specularColor, smoothness, toonRampTex);
 
-    return (diffuse + indirect) * (specular + color);
+    color *= (1 - SPECULAR_VALUE);
+    return (color + specular) * light.color * diffuse + indirect * color;
 }
 
 // Distance attenuation implementation taken from AutoLight.cginc

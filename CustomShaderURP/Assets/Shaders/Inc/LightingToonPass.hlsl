@@ -54,13 +54,10 @@ struct VaryingsToon
     half3 viewDirectionWS   : TEXCOORD3;   // World-space view direction
     half3 tangentWS         : TEXCOORD4;   // World-space tangent
     half3 bitangentWS       : TEXCOORD5;   // World-space bitangent
-
 #ifdef REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR
     float4 shadowCoord      : TEXCOORD6;   // Vertex shadow coords if required
 #endif
-
     half fogFactor          : TEXCOORD7;   // Fog factor
-
     float4 pos              : SV_POSITION; // Clip-space position
 };
 
@@ -114,8 +111,8 @@ half4 fragToon(VaryingsToon input) : SV_Target
 
     // Indirect light
     half3 indirect = SampleSH(normalWS);
+    // Uncomment this if doing SRGB conversion to look the same as Built-in RP
 //#if UNITY_COLORSPACE_GAMMA
-//    // SRGB conversion if color space is Gamma
 //    indirect = FastLinearToSRGB(indirect);
 //#endif
 
@@ -154,8 +151,7 @@ half4 fragToon(VaryingsToon input) : SV_Target
     int additionalLightCount = GetAdditionalLightsCount();
 
     // Loop through additional lights
-    for (int lightIndex = 0; lightIndex < additionalLightCount; lightIndex++)
-    {
+    for (int lightIndex = 0; lightIndex < additionalLightCount; lightIndex++) {
         // Get additional light data by index
         // Shadows will be computed if _ADDITIONAL_LIGHT_SHADOWS is defined
         Light additionalLight = GetAdditionalLight(lightIndex, input.positionWS);

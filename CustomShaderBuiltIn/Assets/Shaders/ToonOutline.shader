@@ -56,6 +56,9 @@ Shader "Sample/ToonOutline"
             // Unity includes
             #include "UnityCG.cginc"
 
+            // Indicate that we want indirect light for this pass
+            #define SAMPLE_INDIRECT
+
             // Pass includes
             #include "Inc/LightingToonPass.cginc"
 
@@ -90,9 +93,6 @@ Shader "Sample/ToonOutline"
                         
             // Unity includes
             #include "UnityCG.cginc"
-
-            // Indicate that this is forward add pass
-            #define SAMPLE_ADD_PASS
 
             // Pass includes
             #include "Inc/LightingToonPass.cginc"

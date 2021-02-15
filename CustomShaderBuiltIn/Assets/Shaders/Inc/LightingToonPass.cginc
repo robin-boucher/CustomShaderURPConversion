@@ -107,10 +107,10 @@ fixed4 fragToon(v2f_toon i) : SV_Target
     float shadowAttenuation = UNITY_SHADOW_ATTENUATION(i, i.positionWS); // Shadow attenuation
 
     // Indirect light (only ForwardBase pass)
-#ifdef SAMPLE_ADD_PASS
-    fixed3 indirect = 0;
-#else
+#ifdef SAMPLE_INDIRECT
     fixed3 indirect = max(0, ShadeSH9(half4(normalWS, 1)));
+#else
+    fixed3 indirect = 0;
 #endif
 
     // Get lighting color
