@@ -106,11 +106,11 @@ fixed4 fragToon(v2f_toon i) : SV_Target
     float distanceAttenuation = DistanceAttenuation(i.positionWS);  // Distance attenuation
     float shadowAttenuation = UNITY_SHADOW_ATTENUATION(i, i.positionWS); // Shadow attenuation
 
-    // Indirect light (only ForwardBase pass)
-#ifdef SAMPLE_INDIRECT
-    fixed3 indirect = max(0, ShadeSH9(half4(normalWS, 1)));
+    // Ambient light (only ForwardBase pass)
+#ifdef SAMPLE_AMBIENT
+    fixed3 ambient = max(0, ShadeSH9(half4(normalWS, 1)));
 #else
-    fixed3 indirect = 0;
+    fixed3 ambient = 0;
 #endif
 
     // Get lighting color
@@ -125,7 +125,7 @@ fixed4 fragToon(v2f_toon i) : SV_Target
         _Smoothness,
         _ToonRampTex,
         _ShadowRampBlend,
-        indirect
+        ambient
     );
 
     color.a = mainColor.a;

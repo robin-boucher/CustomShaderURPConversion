@@ -70,7 +70,7 @@ half3 GetLightingToonSpecular(Light light, half3 normalWS, half3 viewDirectionWS
 }
 
 // Get lighting toon color
-half3 GetLightingToonColor(half3 color, Light light, half3 normalWS, half3 viewDirectionWS, half3 specularColor, float smoothness, TEXTURE2D_PARAM(toonRampTex, toonRampTexSampler), float shadowRampBlend, half3 indirect)
+half3 GetLightingToonColor(half3 color, Light light, half3 normalWS, half3 viewDirectionWS, half3 specularColor, float smoothness, TEXTURE2D_PARAM(toonRampTex, toonRampTexSampler), float shadowRampBlend, half3 ambient)
 {
     // Diffuse
     half3 diffuse = GetLightingToonDiffuse(light, normalWS, TEXTURE2D_ARGS(toonRampTex, toonRampTexSampler), shadowRampBlend);
@@ -78,7 +78,7 @@ half3 GetLightingToonColor(half3 color, Light light, half3 normalWS, half3 viewD
     half3 specular = GetLightingToonSpecular(light, normalWS, viewDirectionWS, specularColor, smoothness, TEXTURE2D_ARGS(toonRampTex, toonRampTexSampler));
 
     color *= (1 - SPECULAR_VALUE);
-    return (color + specular) * light.color * diffuse + indirect * color;
+    return (color + specular) * light.color * diffuse + ambient * color;
 }
 
 #endif

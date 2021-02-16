@@ -56,8 +56,8 @@ Shader "Sample/ToonOutline"
             // Unity includes
             #include "UnityCG.cginc"
 
-            // Indicate that we want indirect light for this pass
-            #define SAMPLE_INDIRECT
+            // Indicate that we want ambient light for this pass
+            #define SAMPLE_AMBIENT
 
             // Pass includes
             #include "Inc/LightingToonPass.cginc"

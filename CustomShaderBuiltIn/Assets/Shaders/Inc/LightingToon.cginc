@@ -64,7 +64,7 @@ fixed3 GetLightingToonSpecular(UnityLight light, float shadowAttenuation, half3 
 }
 
 // Get lighting toon color
-fixed3 GetLightingToonColor(fixed3 color, UnityLight light, float distanceAttenuation, float shadowAttenuation, half3 normalWS, half3 viewDirectionWS, fixed3 specularColor, float smoothness, sampler2D toonRampTex, float shadowRampBlend, fixed3 indirect)
+fixed3 GetLightingToonColor(fixed3 color, UnityLight light, float distanceAttenuation, float shadowAttenuation, half3 normalWS, half3 viewDirectionWS, fixed3 specularColor, float smoothness, sampler2D toonRampTex, float shadowRampBlend, fixed3 ambient)
 {
     // Diffuse
     fixed3 diffuse = GetLightingToonDiffuse(light, distanceAttenuation, shadowAttenuation, normalWS, toonRampTex, shadowRampBlend);
@@ -72,7 +72,7 @@ fixed3 GetLightingToonColor(fixed3 color, UnityLight light, float distanceAttenu
     fixed3 specular = GetLightingToonSpecular(light, shadowAttenuation, normalWS, viewDirectionWS, specularColor, smoothness, toonRampTex);
 
     color *= (1 - SPECULAR_VALUE);
-    return (color + specular) * light.color * diffuse + indirect * color;
+    return (color + specular) * light.color * diffuse + ambient * color;
 }
 
 // Distance attenuation implementation taken from AutoLight.cginc

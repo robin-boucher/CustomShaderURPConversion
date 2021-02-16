@@ -109,11 +109,11 @@ half4 fragToon(VaryingsToon input) : SV_Target
     half3 normalTS = UnpackNormal(SAMPLE_TEXTURE2D(_NormalTex, sampler_NormalTex, uv));
     half3 normalWS = normalize(mul(normalTS, float3x3(input.tangentWS, input.bitangentWS, input.normalWS)));
 
-    // Indirect light
-    half3 indirect = SampleSH(normalWS);
+    // Ambient light
+    half3 ambient = SampleSH(normalWS);
     // Uncomment this if doing SRGB conversion to look the same as Built-in RP
 //#if UNITY_COLORSPACE_GAMMA
-//    indirect = FastLinearToSRGB(indirect);
+//    ambient = FastLinearToSRGB(ambient);
 //#endif
 
     // Main light
@@ -142,7 +142,7 @@ half4 fragToon(VaryingsToon input) : SV_Target
         _Smoothness,
         TEXTURE2D_ARGS(_ToonRampTex, sampler_ToonRampTex),
         _ShadowRampBlend,
-        indirect
+        ambient
     );
 
     // Additional lights
@@ -166,7 +166,7 @@ half4 fragToon(VaryingsToon input) : SV_Target
             _Smoothness,
             TEXTURE2D_ARGS(_ToonRampTex, sampler_ToonRampTex),
             _ShadowRampBlend,
-            0 // Only add indirect lighting during main light
+            0 // Only add ambient lighting during main light
         );
     }
 #endif
