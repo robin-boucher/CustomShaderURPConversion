@@ -111,10 +111,11 @@ half4 fragToon(VaryingsToon input) : SV_Target
 
     // Ambient light
     half3 ambient = SampleSH(normalWS);
-    // Uncomment this if doing SRGB conversion to look the same as Built-in RP
-//#if UNITY_COLORSPACE_GAMMA
-//    ambient = FastLinearToSRGB(ambient);
-//#endif
+    // Manual SRGB conversion of ambient light if color space is set to Gamma
+    // (This is fixed in SRP version 10.2.0 and higher, so remove in that case)
+#if UNITY_COLORSPACE_GAMMA
+    ambient = FastLinearToSRGB(ambient);
+#endif
 
     // Main light
 #ifdef _MAIN_LIGHT_SHADOWS

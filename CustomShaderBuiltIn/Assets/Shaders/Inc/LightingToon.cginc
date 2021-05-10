@@ -51,7 +51,7 @@ float GetSpecularTerm(half3 normalWS, half3 lightDirectionWS, half3 viewDirectio
 }
 
 // Specular
-fixed3 GetLightingToonSpecular(UnityLight light, float shadowAttenuation, half3 normalWS, half3 viewDirectionWS, fixed3 specularColor, float smoothness, sampler2D toonRampTex)
+fixed3 GetLightingToonSpecular(UnityLight light, half3 normalWS, half3 viewDirectionWS, fixed3 specularColor, float smoothness, sampler2D toonRampTex)
 {
     // Specular factor
     float specularFactor = GetSpecularTerm(normalWS, light.dir, viewDirectionWS, smoothness) * SPECULAR_VALUE;
@@ -69,7 +69,7 @@ fixed3 GetLightingToonColor(fixed3 color, UnityLight light, float distanceAttenu
     // Diffuse
     fixed3 diffuse = GetLightingToonDiffuse(light, distanceAttenuation, shadowAttenuation, normalWS, toonRampTex, shadowRampBlend);
     // Specular
-    fixed3 specular = GetLightingToonSpecular(light, shadowAttenuation, normalWS, viewDirectionWS, specularColor, smoothness, toonRampTex);
+    fixed3 specular = GetLightingToonSpecular(light, normalWS, viewDirectionWS, specularColor, smoothness, toonRampTex);
 
     color *= (1 - SPECULAR_VALUE);
     return (color + specular) * light.color * diffuse + ambient * color;

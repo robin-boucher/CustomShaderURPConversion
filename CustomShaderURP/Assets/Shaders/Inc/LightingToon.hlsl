@@ -3,14 +3,11 @@
 
 // Basic toon lighting implementation
 
-// Uncomment this if doing SRGB conversion to look the same as Built-in RP
-//#ifdef UNITY_COLORSPACE_GAMMA
-//#define SPECULAR_VALUE 0.22
-//#else
-//#define SPECULAR_VALUE 0.04
-//#endif
-
+#ifdef UNITY_COLORSPACE_GAMMA
+#define SPECULAR_VALUE 0.22
+#else
 #define SPECULAR_VALUE 0.04
+#endif
 
 // Diffuse
 half3 GetLightingToonDiffuse(Light light, half3 normalWS, TEXTURE2D_PARAM(toonRampTex, toonRampTexSampler), float shadowRampBlend)
@@ -41,17 +38,13 @@ float GetSpecularTerm(half3 normalWS, half3 lightDirectionWS, half3 viewDirectio
     float r2 = roughness * roughness;
     float d = NDH * NDH * (r2 - 1.0) + 1.00001;
 
-    // Uncomment this if doing SRGB conversion to look the same as Built-in RP
-//#ifdef UNITY_COLORSPACE_GAMMA
-//    float normalizationTerm = roughness + 1.5;
-//    float specularTerm = roughness / (d * max(0.32, LDH) * normalizationTerm);
-//#else
-//    float normalizationTerm = roughness * 4 + 2;
-//    float specularTerm = r2 / ((d * d) * max(0.1, LDH * LDH) * normalizationTerm);
-//#endif
-
+#ifdef UNITY_COLORSPACE_GAMMA
+    float normalizationTerm = roughness + 1.5;
+    float specularTerm = roughness / (d * max(0.32, LDH) * normalizationTerm);
+#else
     float normalizationTerm = roughness * 4 + 2;
     float specularTerm = r2 / ((d * d) * max(0.1, LDH * LDH) * normalizationTerm);
+#endif
 
     return specularTerm;
 }
